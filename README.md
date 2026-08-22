@@ -1,4 +1,4 @@
-# Training Journal v0.1.0 — PWA iPad/iPhone
+# Training Journal v0.1.1 — PWA iPad/iPhone
 
 Prima versione del diario personale per un singolo atleta **Pesistica + CrossFit**.
 
@@ -49,3 +49,13 @@ python -m http.server 8080
 Poi apri `http://localhost:8080`.
 
 > Il test locale è utile per verificare la UI, ma per installarla su iPad serve la pubblicazione HTTPS.
+
+## Novità v0.1.1
+
+- calendario giornaliero con riepilogo dei risultati dello specifico allenamento (carichi, score WOD, durata e RPE)
+- dettaglio allenamento completato con sezione Risultati separata dal Programmato
+- Progressi esplorabili: storico peso, dettaglio singola pesata, storico per esercizio/RM, storico WOD per livello e sedute degli ultimi 30 giorni
+- collegamento dal progresso all’allenamento di origine quando disponibile
+- UI rifinita in stile sportivo elegante, ottimizzata soprattutto per iPad
+- aggiornamento PWA più affidabile con cache v0.1.1 e refresh automatico quando cambia il Service Worker
+
