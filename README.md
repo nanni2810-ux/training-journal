@@ -1,4 +1,4 @@
-# Training Journal v0.1.2 — PWA iPad/iPhone
+# Training Journal v0.1.3 — PWA iPad/iPhone
 
 Prima versione del diario personale per un singolo atleta **Pesistica + CrossFit**.
 
@@ -12,6 +12,7 @@ Prima versione del diario personale per un singolo atleta **Pesistica + CrossFit
 - importazione di un allenamento completo da messaggio/testo con riconoscimento automatico di data, titolo e sezioni
 - ricerca libera dei movimenti con sinonimi (Snatch=Strappo, Deadlift=Stacco, Clean=Girata, Clean & Jerk=Slancio)
 - libreria WOD incorporata (1.010 WOD) proveniente da Weightlifting Coach / Hybrid-Hyrox
+- riconoscimento automatico dei WOD importati rispetto alla libreria, con classificazione Open, Hero, Girl/Benchmark quando disponibile
 - importazione di un WOD nella seduta e modifica libera della copia
 - libreria personale dei WOD creati dall'atleta
 - registrazione svolto: carichi, serie, ripetizioni, tentativi, score WOD, Rx/Scaled, note
@@ -71,3 +72,12 @@ Poi apri `http://localhost:8080`.
 - modelli aggiornati: **Hybrid / CrossFit** (un unico modello), **HYROX**, **Weightlifting**, **Metabolic / Running**
 - tutti i dati importati restano modificabili prima del salvataggio
 
+## Novità v0.1.3
+
+- confronto automatico del WOD importato con i 1.010 WOD della libreria locale
+- riconoscimento per nome quando il nome è presente e confronto strutturale quando il messaggio contiene soltanto il workout
+- confronto tollerante ai carichi: valori Rx/Scaled in kg/lb, parentesi e annotazioni di peso non impediscono il riconoscimento dello stesso WOD
+- normalizzazione dei movimenti più comuni e delle varianti/plurali (es. Dumbbell Snatches, Burpees, Box Jump Overs)
+- badge **Open**, **Hero**, **Girl** o **Benchmark** quando il WOD viene riconosciuto
+- collegamento al `libraryId` originale senza sostituire il testo importato: i carichi più completi presenti nel messaggio vengono mantenuti
+- se due WOD risultano troppo simili, l'app mostra una possibile corrispondenza ma evita il collegamento automatico
