@@ -1,4 +1,4 @@
-# Training Journal v0.1.1 — PWA iPad/iPhone
+# Training Journal v0.1.2 — PWA iPad/iPhone
 
 Prima versione del diario personale per un singolo atleta **Pesistica + CrossFit**.
 
@@ -8,7 +8,8 @@ Prima versione del diario personale per un singolo atleta **Pesistica + CrossFit
 - calendario mensile
 - allenamenti programmati e lavoro svolto separati
 - sezioni attivabili: Warm-up, Tabata, Skill, Forza, Pesistica, Metcon, WOD, Core/Accessory, Cooldown, Personalizzata
-- modelli rapidi CrossFit, Hybrid e Weightlifting + Metcon
+- modelli rapidi Hybrid / CrossFit, HYROX, Weightlifting e Metabolic / Running
+- importazione di un allenamento completo da messaggio/testo con riconoscimento automatico di data, titolo e sezioni
 - ricerca libera dei movimenti con sinonimi (Snatch=Strappo, Deadlift=Stacco, Clean=Girata, Clean & Jerk=Slancio)
 - libreria WOD incorporata (1.010 WOD) proveniente da Weightlifting Coach / Hybrid-Hyrox
 - importazione di un WOD nella seduta e modifica libera della copia
@@ -58,4 +59,15 @@ Poi apri `http://localhost:8080`.
 - collegamento dal progresso all’allenamento di origine quando disponibile
 - UI rifinita in stile sportivo elegante, ottimizzata soprattutto per iPad
 - aggiornamento PWA più affidabile con cache v0.1.1 e refresh automatico quando cambia il Service Worker
+
+## Novità v0.1.2
+
+- pulsante **Importa messaggio** nel costruttore dell'allenamento
+- riconoscimento automatico di intestazione/data e delle sezioni Riscaldamento, Tabata, Skill, Forza/Pesistica, Metcon, WOD, Core e Cooldown
+- il Riscaldamento viene trasformato in righe strutturate quando riconosce round, reps o tempi
+- Tabata usa i campi predefiniti modificabili 20" / 10" / 8 round quando il messaggio non specifica altro
+- Skill resta testo libero
+- WOD riconosce formati come For Time, AMRAP, EMOM, E2MOM e mantiene Time Cap e movimenti nel testo
+- modelli aggiornati: **Hybrid / CrossFit** (un unico modello), **HYROX**, **Weightlifting**, **Metabolic / Running**
+- tutti i dati importati restano modificabili prima del salvataggio
 
