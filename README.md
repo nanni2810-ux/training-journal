@@ -1,4 +1,4 @@
-# Training Journal v0.1.3 — PWA iPad/iPhone
+# Training Journal v0.1.4 — PWA iPad/iPhone
 
 Prima versione del diario personale per un singolo atleta **Pesistica + CrossFit**.
 
@@ -81,3 +81,13 @@ Poi apri `http://localhost:8080`.
 - badge **Open**, **Hero**, **Girl** o **Benchmark** quando il WOD viene riconosciuto
 - collegamento al `libraryId` originale senza sostituire il testo importato: i carichi più completi presenti nel messaggio vengono mantenuti
 - se due WOD risultano troppo simili, l'app mostra una possibile corrispondenza ma evita il collegamento automatico
+
+## Novità v0.1.4
+
+- dalle **possibili corrispondenze** puoi ora aprire direttamente il WOD candidato della libreria e confermare il collegamento senza eseguire una nuova ricerca
+- due opzioni di conferma: collegare il WOD mantenendo il testo importato oppure sostituirlo con la versione della libreria
+- quando una corrispondenza viene confermata, i risultati già registrati per quella sezione vengono collegati allo stesso `libraryId`
+- correzione dei Progressi: i WOD generici chiamati semplicemente “WOD” non vengono più raggruppati tra loro come se fossero lo stesso workout
+- lo storico usa **risultati registrati** invece di “tentativi”
+- riepilogo WOD più utile: data, categoria/nome, parte del workout e score sono visibili direttamente nei Progressi
+- il dettaglio mostra descrizione del WOD, risultato migliore solo quando esistono più risultati realmente riferiti allo stesso WOD e collegamento all'allenamento di origine
