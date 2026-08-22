@@ -18,12 +18,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Rebuild release patch
+      - name: Apply release patch when needed
         shell: bash
         run: |
           cat release/v0.1.1/patch.gz.b64.part* | base64 -d | gunzip > /tmp/v011.patch
-          git apply --check /tmp/v011.patch
-          git apply /tmp/v011.patch
+          if git apply --check /tmp/v011.patch 2>/dev/null; then
+            git apply /tmp/v011.patch
+          else
+            echo "Base v0.1.1 patch already applied"
+          fi
+
+      - name: Final v0.1.1 hotfixes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('app.js')
+          s=p.read_text()
+          s=s.replace("workouts.map(workoutCard).join('')", "workouts.map(w=>workoutCard(w,false)).join('')")
+          p.write_text(s)
+          PY
 
       - name: Validate JavaScript
         shell: bash
@@ -33,12 +47,17 @@ jobs:
           grep -q "const VERSION='0.1.1'" app.js
           grep -q "training-journal-v0.1.1" sw.js
           grep -q "app.js?v=0.1.1" index.html
+          grep -q "workouts.map(w=>workoutCard(w,false))" app.js
 
-      - name: Commit release
+      - name: Commit release changes
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add app.js styles.css index.html sw.js README.md
-          git commit -m "Release Training Journal v0.1.1"
+          if git diff --cached --quiet; then
+            echo "No release changes to commit"
+            exit 0
+          fi
+          git commit -m "Finalize Training Journal v0.1.1"
           git push
