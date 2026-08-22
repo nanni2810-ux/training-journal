@@ -1,0 +1,66 @@
+{
+  "app": "Training Journal",
+  "version": "0.1.0",
+  "wod_library_script_bytes": 1007653,
+  "files": [
+    {
+      "path": "DEPLOY.md",
+      "bytes": 853
+    },
+    {
+      "path": "README.md",
+      "bytes": 2000
+    },
+    {
+      "path": "app.js",
+      "bytes": 65760
+    },
+    {
+      "path": "db.js",
+      "bytes": 1138
+    },
+    {
+      "path": "icons/icon-180.png",
+      "bytes": 818
+    },
+    {
+      "path": "icons/icon-192.png",
+      "bytes": 873
+    },
+    {
+      "path": "icons/icon-512.png",
+      "bytes": 2593
+    },
+    {
+      "path": "index.html",
+      "bytes": 3124
+    },
+    {
+      "path": "manifest.webmanifest",
+      "bytes": 660
+    },
+    {
+      "path": "serve_local.bat",
+      "bytes": 57
+    },
+    {
+      "path": "styles.css",
+      "bytes": 12999
+    },
+    {
+      "path": "sw.js",
+      "bytes": 810
+    },
+    {
+      "path": "wod_library.js",
+      "bytes": 1007653
+    }
+  ],
+  "checks": [
+    "manifest present",
+    "service worker present",
+    "IndexedDB helper present",
+    "responsive CSS present",
+    "WOD library embedded"
+  ]
+}

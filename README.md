@@ -10,7 +10,7 @@ Prima versione del diario personale per un singolo atleta **Pesistica + CrossFit
 - sezioni attivabili: Warm-up, Tabata, Skill, Forza, Pesistica, Metcon, WOD, Core/Accessory, Cooldown, Personalizzata
 - modelli rapidi CrossFit, Hybrid e Weightlifting + Metcon
 - ricerca libera dei movimenti con sinonimi (Snatch=Strappo, Deadlift=Stacco, Clean=Girata, Clean & Jerk=Slancio)
-- libreria WOD incorporata proveniente da Weightlifting Coach / Hybrid-Hyrox
+- libreria WOD incorporata (1.010 WOD) proveniente da Weightlifting Coach / Hybrid-Hyrox
 - importazione di un WOD nella seduta e modifica libera della copia
 - libreria personale dei WOD creati dall'atleta
 - registrazione svolto: carichi, serie, ripetizioni, tentativi, score WOD, Rx/Scaled, note

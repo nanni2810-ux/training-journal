@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#0f2f33">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Training Journal">
+  <meta name="format-detection" content="telephone=no">
+  <title>Training Journal</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="appShell" class="app-shell">
+    <aside class="side-nav" aria-label="Navigazione principale">
+      <div class="brand">
+        <div class="brand-icon">TJ</div>
+        <div><strong>Training Journal</strong><span>Weightlifting · CrossFit</span></div>
+      </div>
+      <button data-nav="home" class="nav-btn active"><span>⌂</span><b>Oggi</b></button>
+      <button data-nav="calendar" class="nav-btn"><span>▦</span><b>Calendario</b></button>
+      <button data-nav="progress" class="nav-btn"><span>↗</span><b>Progressi</b></button>
+      <button data-nav="competitions" class="nav-btn"><span>★</span><b>Gare</b></button>
+      <button data-nav="profile" class="nav-btn"><span>●</span><b>Profilo</b></button>
+      <div class="side-footer"><span id="offlineBadge" class="status-pill">Offline ready</span></div>
+    </aside>
+
+    <header class="mobile-topbar">
+      <div class="brand compact"><div class="brand-icon">TJ</div><div><strong>Training Journal</strong><span id="mobileSubtitle">Oggi</span></div></div>
+    </header>
+
+    <main id="app" class="app-main" aria-live="polite"></main>
+
+    <nav class="bottom-nav" aria-label="Navigazione mobile">
+      <button data-nav="home" class="nav-btn active"><span>⌂</span><b>Oggi</b></button>
+      <button data-nav="calendar" class="nav-btn"><span>▦</span><b>Calendario</b></button>
+      <button data-nav="progress" class="nav-btn"><span>↗</span><b>Progressi</b></button>
+      <button data-nav="competitions" class="nav-btn"><span>★</span><b>Gare</b></button>
+      <button data-nav="profile" class="nav-btn"><span>●</span><b>Profilo</b></button>
+    </nav>
+  </div>
+
+  <div id="modalBackdrop" class="modal-backdrop hidden">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header class="modal-head"><div><h2 id="modalTitle"></h2><p id="modalSubtitle" class="muted"></p></div><button id="modalClose" class="icon-btn" aria-label="Chiudi">✕</button></header>
+      <div id="modalBody" class="modal-body"></div>
+    </section>
+  </div>
+
+  <div id="suggestions" class="suggestions hidden"></div>
+  <div id="toast" class="toast hidden"></div>
+  <input id="backupInput" type="file" accept="application/json,.json" hidden>
+
+  <script src="wod_library_01.js"></script>
+  <script src="wod_library_02.js"></script>
+  <script src="wod_library_03.js"></script>
+  <script src="wod_library_04.js"></script>
+  <script src="wod_library_05.js"></script>
+  <script src="wod_library_06.js"></script>
+  <script src="wod_library_07.js"></script>
+  <script src="wod_library_08.js"></script>
+  <script src="wod_library_09.js"></script>
+  <script src="wod_library_10.js"></script>
+  <script src="db.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
