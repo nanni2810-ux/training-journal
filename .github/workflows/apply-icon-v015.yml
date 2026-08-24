@@ -1,0 +1,100 @@
+name: Apply Training Journal icon v0.1.5
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-icon-v015.yml'
+      - '.icon-update/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Decode and resize icon
+        shell: bash
+        run: |
+          cat .icon-update/part-*.b64 | base64 -d > /tmp/icon-512.png
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          src = Image.open('/tmp/icon-512.png').convert('RGB')
+          if src.size != (512, 512):
+              raise SystemExit(f'Unexpected source size: {src.size}')
+          Path('icons').mkdir(exist_ok=True)
+          src.save('icons/icon-512.png', optimize=True)
+          for size in (192, 180):
+              im = src.resize((size, size), Image.Resampling.LANCZOS)
+              im.save(f'icons/icon-{size}.png', optimize=True)
+          PY
+
+      - name: Version icon references
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text()
+          s = re.sub(r'href="manifest\.webmanifest(?:\?v=[^"]+)?"', 'href="manifest.webmanifest?v=0.1.5"', s)
+          s = re.sub(r'href="icons/icon-180\.png(?:\?v=[^"]+)?"', 'href="icons/icon-180.png?v=0.1.5"', s)
+          s = re.sub(r'href="icons/icon-192\.png(?:\?v=[^"]+)?"', 'href="icons/icon-192.png?v=0.1.5"', s)
+          p.write_text(s)
+
+          p = Path('manifest.webmanifest')
+          s = p.read_text()
+          s = re.sub(r'icons/icon-192\.png(?:\?v=[^" ]+)?', 'icons/icon-192.png?v=0.1.5', s)
+          s = re.sub(r'icons/icon-512\.png(?:\?v=[^" ]+)?', 'icons/icon-512.png?v=0.1.5', s)
+          p.write_text(s)
+
+          p = Path('sw.js')
+          s = p.read_text()
+          s = re.sub(r"const CACHE='training-journal-v[^']+'", "const CACHE='training-journal-v0.1.5'", s)
+          s = re.sub(r"'\./manifest\.webmanifest(?:\?v=[^']+)?'", "'./manifest.webmanifest?v=0.1.5'", s)
+          s = re.sub(r"'\./icons/icon-180\.png(?:\?v=[^']+)?'", "'./icons/icon-180.png?v=0.1.5'", s)
+          s = re.sub(r"'\./icons/icon-192\.png(?:\?v=[^']+)?'", "'./icons/icon-192.png?v=0.1.5'", s)
+          s = re.sub(r"'\./icons/icon-512\.png(?:\?v=[^']+)?'", "'./icons/icon-512.png?v=0.1.5'", s)
+          p.write_text(s)
+
+          p = Path('README.md')
+          s = p.read_text()
+          s = re.sub(r'^# Training Journal v[^ ]+', '# Training Journal v0.1.5', s, count=1, flags=re.M)
+          if '## Novità v0.1.5' not in s:
+              s += '\n\n## Novità v0.1.5\n\n- nuova icona sportivo-elegante Training Journal per iPad/PWA\n- icone PWA 180, 192 e 512 px aggiornate e versionate per ridurre i problemi di cache\n'
+          p.write_text(s)
+          PY
+
+      - name: Validate
+        shell: bash
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          for size in (180, 192, 512):
+              im = Image.open(f'icons/icon-{size}.png')
+              assert im.size == (size, size), (size, im.size)
+          PY
+          grep -q 'icon-180.png?v=0.1.5' index.html
+          grep -q 'icon-512.png?v=0.1.5' manifest.webmanifest
+          grep -q "training-journal-v0.1.5" sw.js
+
+      - name: Commit icon update
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add icons/ index.html manifest.webmanifest sw.js README.md
+          if git diff --cached --quiet; then
+            echo "No icon changes to commit"
+            exit 0
+          fi
+          git commit -m "Update Training Journal icon v0.1.5"
+          git push
