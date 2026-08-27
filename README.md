@@ -1,4 +1,4 @@
-# Training Journal v0.1.4 — PWA iPad/iPhone
+# Training Journal v0.1.6 — PWA iPad/iPhone
 
 Prima versione del diario personale per un singolo atleta **Pesistica + CrossFit**.
 
@@ -27,6 +27,7 @@ Prima versione del diario personale per un singolo atleta **Pesistica + CrossFit
 - dati in IndexedDB
 - service worker e funzionamento offline
 - struttura dati già predisposta per futura sincronizzazione con Weightlifting Coach via Firebase
+- modulo **Extra adattivo** con priorità, focus, versione principale/ridotta, regole di Skip, scelta atleta e analisi automatica della classe
 
 ## Installazione su iPad
 
@@ -91,3 +92,18 @@ Poi apri `http://localhost:8080`.
 - lo storico usa **risultati registrati** invece di “tentativi”
 - riepilogo WOD più utile: data, categoria/nome, parte del workout e score sono visibili direttamente nei Progressi
 - il dettaglio mostra descrizione del WOD, risultato migliore solo quando esistono più risultati realmente riferiti allo stesso WOD e collegamento all'allenamento di origine
+
+## Novità v0.1.6
+
+- nuovo modulo **Extra adattivo** disponibile dalla Home e dal giorno di calendario
+- ogni Extra ha priorità Alta / Media / Bassa, timing Prima / Dopo / Indifferente, durata e focus multipli
+- focus disponibili per ginnastica, pesistica e condizionamento: Pull Strength, Bar Gymnastics, Muscle-Up, Grip, HSPU, Handstand, Snatch, Clean & Jerk, Squat, Running, Erg e altri
+- ogni Extra contiene una **Versione principale** e una **Versione ridotta** realmente programmate
+- analisi automatica della classe del giorno con riconoscimento dei movimenti e stima della sovrapposizione sui focus
+- suggerimento automatico **Principale / Ridotto / Skip consigliato** modulato anche dalla priorità dell'Extra
+- pulsante **Perché?** con motivazione, classe analizzata e livello di sovrapposizione per ciascun focus
+- l'atleta può scegliere Principale, Ridotto o Skip anche in override rispetto al suggerimento
+- lo Skip programmato viene distinto da un allenamento non eseguito
+- gli Extra completati e ridotti vengono riepilogati nei Progressi delle ultime 4 settimane
+- indicatore degli Extra presenti anche nelle giornate del calendario
+- i dati `adaptiveExtras` sono inclusi nello stato locale/backup e sono predisposti per futura sincronizzazione Coach → Athlete
