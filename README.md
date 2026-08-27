@@ -1,4 +1,4 @@
-# Training Journal v0.1.6 — PWA iPad/iPhone
+# Training Journal v0.1.7 — PWA iPad/iPhone
 
 Prima versione del diario personale per un singolo atleta **Pesistica + CrossFit**.
 
@@ -28,6 +28,8 @@ Prima versione del diario personale per un singolo atleta **Pesistica + CrossFit
 - service worker e funzionamento offline
 - struttura dati già predisposta per futura sincronizzazione con Weightlifting Coach via Firebase
 - modulo **Extra adattivo** con priorità, focus, versione principale/ridotta, regole di Skip, scelta atleta e analisi automatica della classe
+- importazione di pacchetti settimanali di Extra adattivi da file JSON
+- registrazione di campi test specifici per ogni Extra importato
 
 ## Installazione su iPad
 
@@ -107,3 +109,13 @@ Poi apri `http://localhost:8080`.
 - gli Extra completati e ridotti vengono riepilogati nei Progressi delle ultime 4 settimane
 - indicatore degli Extra presenti anche nelle giornate del calendario
 - i dati `adaptiveExtras` sono inclusi nello stato locale/backup e sono predisposti per futura sincronizzazione Coach → Athlete
+
+## Novità v0.1.7
+
+- nuovo comando **Importa programma** nella Home
+- importazione da file JSON di una settimana completa di Extra adattivi senza cancellare allenamenti o dati esistenti
+- anteprima del pacchetto prima dell'importazione con date, titoli e priorità
+- reimportazione sicura: gli Extra con lo stesso ID vengono aggiornati preservando scelta atleta, completamento e risultati test già registrati
+- ogni Extra può includere campi test specifici definiti nel pacchetto del coach
+- pulsante **Registra test** direttamente sulla card dell'Extra per salvare carichi, reps, RPE, secondi e note utili alla programmazione successiva
+- cache offline aggiornata a v0.1.7
