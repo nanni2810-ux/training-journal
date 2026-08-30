@@ -1,5 +1,5 @@
-const CACHE='training-journal-v0.2.0';
-const CORE=['./','./index.html','./styles.css?v=0.1.1','./db.js','./app.js?v=0.1.1','./v012.js?v=0.1.2','./v013.js?v=0.1.3','./v014.js?v=0.1.4','./v018_guard.js?v=0.1.8','./v016.js?v=0.1.6','./v017.js?v=0.1.7','./v019_wod_library.js?v=0.1.9','./v020_day_swipe.js?v=0.2.0','./manifest.webmanifest','./icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png'];
+const CACHE='training-journal-v0.2.1';
+const CORE=['./','./index.html','./styles.css?v=0.1.1','./db.js','./app.js?v=0.1.1','./v012.js?v=0.1.2','./v013.js?v=0.1.3','./v014.js?v=0.1.4','./v018_guard.js?v=0.2.1','./v016.js?v=0.1.6','./v017.js?v=0.1.7','./v019_wod_library.js?v=0.1.9','./v020_day_swipe.js?v=0.2.1','./manifest.webmanifest','./icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png'];
 const LIBRARY=['./wod_library_01.js','./wod_library_02.js','./wod_library_03.js','./wod_library_04.js','./wod_library_05.js','./wod_library_06.js','./wod_library_07.js','./wod_library_08.js','./wod_library_09.js','./wod_library_10.js'];
 const ASSETS=[...CORE,...LIBRARY];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
