@@ -8,7 +8,8 @@ const OWN_SELECTORS=[
   '.ae-calendar-dot',
   '[data-ae-new]',
   '[data-test-open]',
-  '.ae-test-summary'
+  '.ae-test-summary',
+  '.day-swipe-nav'
 ];
 
 function isOwnNode(node){
@@ -16,7 +17,7 @@ function isOwnNode(node){
   return OWN_SELECTORS.some(sel=>node.matches(sel)||node.closest(sel));
 }
 
-function isAdaptiveOnlyMutation(record){
+function isUiOnlyMutation(record){
   if(record.type!=='childList')return false;
   const target=record.target instanceof Element?record.target:null;
   if(target&&OWN_SELECTORS.some(sel=>target.matches(sel)||target.closest(sel)))return true;
@@ -26,8 +27,8 @@ function isAdaptiveOnlyMutation(record){
 
 class GuardedMutationObserver{
   constructor(callback){
-    this._inner=new NativeMutationObserver((records,observer)=>{
-      const meaningful=records.filter(r=>!isAdaptiveOnlyMutation(r));
+    this._inner=new NativeMutationObserver((records)=>{
+      const meaningful=records.filter(r=>!isUiOnlyMutation(r));
       if(meaningful.length)callback(meaningful,this);
     });
   }
@@ -37,5 +38,5 @@ class GuardedMutationObserver{
 }
 GuardedMutationObserver.__tjAdaptiveGuard=true;
 window.MutationObserver=GuardedMutationObserver;
-console.info('Training Journal adaptive render guard v0.1.8 loaded');
+console.info('Training Journal render guard v0.2.1 loaded');
 })();
