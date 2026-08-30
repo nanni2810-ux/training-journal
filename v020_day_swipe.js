@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const PATCH_VERSION='0.2.0';
+const PATCH_VERSION='0.2.1';
 const APP=document.getElementById('app');
 if(!APP)return;
 
@@ -12,22 +12,30 @@ function parseISO(v){
 function iso(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function moveDate(v,delta){const d=parseISO(v);if(!d)return v;d.setDate(d.getDate()+delta);return iso(d)}
 function shortDate(v){const d=parseISO(v);return d?new Intl.DateTimeFormat('it-IT',{weekday:'short',day:'numeric',month:'short'}).format(d):''}
-function currentDay(){return APP.querySelector('[data-action="toggle-rest"][data-date]')?.dataset.date||''}
-function isDayView(){return !!currentDay()}
+function currentDay(){
+  return APP.querySelector('[data-action="toggle-rest"][data-date]')?.dataset.date||
+         APP.querySelector('[data-action="new-workout"][data-date]')?.dataset.date||'';
+}
+function isDayView(){return !!currentDay()&&!!APP.querySelector('.page-head [data-nav="calendar"]')}
 function openDay(date){
   if(!date)return;
   const b=document.createElement('button');
   b.type='button';b.hidden=true;b.dataset.action='open-day';b.dataset.date=date;
   document.body.appendChild(b);b.click();b.remove();
 }
-function navigate(delta){const cur=currentDay();if(!cur)return;openDay(moveDate(cur,delta))}
+function navigate(delta){const cur=currentDay();if(!cur||!isDayView())return;openDay(moveDate(cur,delta))}
 
 function enhanceDay(){
-  if(!isDayView())return;
-  const page=APP.querySelector('.page');if(!page)return;
-  const date=currentDay();
-  const prev=moveDate(date,-1),next=moveDate(date,1);
+  const page=APP.querySelector('.page');
+  if(!page)return;
+  if(!isDayView()){
+    page.querySelector('.day-swipe-nav')?.remove();
+    page.classList.remove('day-swipe-page');
+    return;
+  }
+  const date=currentDay(),prev=moveDate(date,-1),next=moveDate(date,1);
   let nav=page.querySelector('.day-swipe-nav');
+  if(nav?.dataset.day===date&&nav.querySelector('[data-day-jump="-1"]')&&nav.querySelector('[data-day-jump="1"]'))return;
   if(!nav){
     nav=document.createElement('div');nav.className='day-swipe-nav';
     const head=page.querySelector('.page-head');
@@ -47,11 +55,11 @@ APP.addEventListener('touchstart',e=>{
 APP.addEventListener('touchend',e=>{
   if(!touch||!isDayView()){touch=null;return}
   const t=e.changedTouches?.[0];if(!t){touch=null;return}
-  const dx=t.clientX-touch.x,dy=t.clientY-touch.y,dt=Date.now()-touch.time;
-  const startDay=touch.day;touch=null;
+  const dx=t.clientX-touch.x,dy=t.clientY-touch.y,dt=Date.now()-touch.time,startDay=touch.day;
+  touch=null;
   if(startDay!==currentDay())return;
-  if(dt>900||Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.35)return;
-  if(dx<0)navigate(1);else navigate(-1);
+  if(dt>900||Math.abs(dx)<80||Math.abs(dx)<Math.abs(dy)*1.4)return;
+  navigate(dx<0?1:-1);
 },{passive:true});
 APP.addEventListener('touchcancel',()=>{touch=null},{passive:true});
 
@@ -60,7 +68,6 @@ document.addEventListener('click',e=>{
   e.preventDefault();e.stopPropagation();navigate(Number(b.dataset.dayJump)||0);
 },true);
 
-// Comodo anche con tastiera su iPad/PC; non intercetta quando si sta scrivendo.
 document.addEventListener('keydown',e=>{
   if(!isDayView()||e.altKey||e.ctrlKey||e.metaKey||e.shiftKey)return;
   const tag=document.activeElement?.tagName;
@@ -70,7 +77,17 @@ document.addEventListener('keydown',e=>{
 });
 
 let timer=null;
-new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(enhanceDay,50)}).observe(APP,{childList:true,subtree:true});
+const observer=new MutationObserver(records=>{
+  const meaningful=records.some(r=>{
+    const target=r.target instanceof Element?r.target:null;
+    if(target?.closest('.day-swipe-nav'))return false;
+    const changed=[...r.addedNodes,...r.removedNodes].filter(n=>n.nodeType===1);
+    return !changed.length||changed.some(n=>!(n instanceof Element)||(!n.matches('.day-swipe-nav')&&!n.closest('.day-swipe-nav')));
+  });
+  if(!meaningful)return;
+  clearTimeout(timer);timer=setTimeout(enhanceDay,50);
+});
+observer.observe(APP,{childList:true,subtree:true});
 
 const style=document.createElement('style');
 style.textContent=`
