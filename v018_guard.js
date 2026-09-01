@@ -9,6 +9,10 @@ const OWN_SELECTORS=[
   '[data-ae-new]',
   '[data-test-open]',
   '.ae-test-summary',
+  '.ae-log-summary',
+  '[data-ae-log-open]',
+  '.ae-log-row',
+  '[data-ae-log-add]',
   '.day-swipe-nav'
 ];
 
@@ -38,5 +42,5 @@ class GuardedMutationObserver{
 }
 GuardedMutationObserver.__tjAdaptiveGuard=true;
 window.MutationObserver=GuardedMutationObserver;
-console.info('Training Journal render guard v0.2.1 loaded');
+console.info('Training Journal render guard v0.2.2 loaded');
 })();
