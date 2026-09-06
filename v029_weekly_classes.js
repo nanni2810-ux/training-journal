@@ -126,8 +126,7 @@ async function exportWeekly(){
   const week=weekBounds(raw);
   const current=await window.TJDB.get(STATE_KEY);
   const inWeek=(current?.workouts||[]).filter(w=>w.date>=week.start&&w.date<=week.end);
-  const tagged=inWeek.filter(w=>w.weeklyClassMeta?.kind==='class');
-  const workouts=tagged.length?tagged:inWeek;
+  const workouts=inWeek;
   if(!workouts.length){toast('Nessuna classe nella settimana selezionata');return}
   const payload={
     packageType:PACKAGE_TYPE,
