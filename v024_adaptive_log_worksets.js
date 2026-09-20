@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const PATCH_VERSION='0.2.4';
+const PATCH_VERSION='0.3.0';
 const STATE_KEY='state.v1';
 const APP=document.getElementById('app');
 if(!APP||!window.TJDB)return;
@@ -12,9 +12,9 @@ const EXERCISES=[
   'Back Squat','Front Squat','Overhead Squat','Deadlift','Romanian Deadlift','Good Morning','Hollow Hold','Arch Hold','Plank'
 ];
 const CANON=[
-  [/weighted\s*pull[- ]?up|pull[- ]?up\s*zavorrat/i,'Weighted Pull-Up'],[/strict\s*pull[- ]?up/i,'Strict Pull-Up'],[/chest[- ]?to[- ]?bar|\bc2b\b/i,'Chest-to-Bar'],
+  [/weighted\s*pull[- ]?up|pull[- ]?up\s*zavorrat/i,'Weighted Pull-Up'],[/strict\s*pull[- ]?up|\bstrict\s*pu\b/i,'Strict Pull-Up'],[/\bpull[- ]?ups?\b/i,'Pull-Up'],[/chest[- ]?to[- ]?bar|\bc2b\b/i,'Chest-to-Bar'],
   [/bar\s*muscle[- ]?up|\bbmu\b/i,'Bar Muscle-Up'],[/ring\s*muscle[- ]?up|\brmu\b/i,'Ring Muscle-Up'],[/dead\s*hang/i,'Dead Hang'],[/high\s*(?:chest[- ]?to[- ]?bar|pull)/i,'High Pull'],[/scap\s*pull/i,'Scap Pull-Up'],
-  [/strict\s*hspu|strict\s*handstand/i,'Strict HSPU'],[/eccentric\s*hspu/i,'Eccentric HSPU'],[/pike\s*hspu/i,'Pike HSPU'],[/handstand\s*hold/i,'Handstand Hold'],[/\bhspu\b|handstand\s*push/i,'HSPU'],
+  [/strict\s*hspu|strict\s*handstand/i,'Strict HSPU'],[/eccentric\s*hspu/i,'Eccentric HSPU'],[/pike\s*hspu/i,'Pike HSPU'],[/handstand\s*hold|\bhs\s*hold\b/i,'Handstand Hold'],[/\bhspu\b|handstand\s*push/i,'HSPU'],
   [/snatch\s*pull|tirata\s*strappo/i,'Snatch Pull'],[/hang\s*snatch/i,'Hang Snatch'],[/power\s*snatch/i,'Power Snatch'],[/\bsnatch\b|\bstrappo\b/i,'Snatch'],
   [/clean\s*(?:&|and)\s*jerk|\bslancio\b/i,'Clean & Jerk'],[/clean\s*pull|tirata\s*slancio/i,'Clean Pull'],[/hang\s*clean/i,'Hang Clean'],[/power\s*clean/i,'Power Clean'],[/split\s*jerk/i,'Split Jerk'],[/\bjerk\b/i,'Jerk'],
   [/front\s*squat/i,'Front Squat'],[/back\s*squat/i,'Back Squat'],[/overhead\s*squat/i,'Overhead Squat'],[/romanian\s*deadlift|\brdl\b/i,'Romanian Deadlift'],[/deadlift|\bstacco\b/i,'Deadlift'],[/good\s*morning/i,'Good Morning'],[/\bclean\b|\bgirata\b/i,'Clean']
@@ -44,23 +44,92 @@ function normalizedRow(r){
   }
   return {...r,exerciseKey:canonicalExercise(r.exercise),setsNumber:setsN,repsNumber:repsN,loadKg:loadN,loadKind:kind,loadValuesKg:['absolute','external_plus'].includes(kind)?values:[],loadValuesPercent:kind==='percent'?values:[],loadSequence:values.length>1,totalReps,tonnageKg,minLoadKg:['absolute','external_plus'].includes(kind)&&values.length?Math.min(...values):null,maxLoadKg:['absolute','external_plus'].includes(kind)&&values.length?Math.max(...values):null,averageLoadKg:['absolute','external_plus'].includes(kind)&&values.length?round2(values.reduce((a,b)=>a+b,0)/values.length):null};
 }
+function exerciseMatches(line){
+  const found=[];
+  CANON.forEach(([r,exercise],priority)=>{
+    const flags=r.flags.includes('g')?r.flags:(r.flags+'g');
+    const re=new RegExp(r.source,flags);
+    let m;
+    while((m=re.exec(line))){
+      found.push({index:m.index,end:m.index+m[0].length,exercise,priority,length:m[0].length});
+      if(!m[0].length)re.lastIndex++;
+    }
+  });
+  found.sort((a,b)=>a.index-b.index||a.priority-b.priority||b.length-a.length);
+  const accepted=[];
+  for(const f of found){
+    if(accepted.some(a=>f.index<a.end&&f.end>a.index))continue;
+    accepted.push(f);
+  }
+  return accepted.sort((a,b)=>a.index-b.index);
+}
+function plannedContextSets(line){
+  let m=String(line||'').match(/\b(?:e2mom|emom|every\s+\d+\s*(?:min|minutes?))\s*[x×]\s*(\d+)\b/i);
+  if(m)return m[1];
+  m=String(line||'').match(/\b(\d+)\s+(?:sets?|rounds?)\b/i);
+  return m?m[1]:'';
+}
+function parsePlannedPiece(piece,exercise,contextSets=''){
+  const line=String(piece||'').trim();
+  let sets='',reps='',load='';
+  let m=line.match(/\b(\d+)\s*[x×]\s*(\([^)]*\)|\d+(?:\s*[-–]\s*\d+)?|max)\b/i);
+  if(m){sets=m[1];reps=m[2].replace(/[()\s]/g,'')}
+  if(!m){
+    const setRep=line.match(/\b(\d+)\s+(?:progressive\s+)?sets?\s*(?:of|da|di)?\s*(\d+(?:\s*[-–]\s*\d+)?|max)\b/i);
+    if(setRep){sets=setRep[1];reps=setRep[2].replace(/\s+/g,'')}
+  }
+  if(!sets&&!reps){
+    const lead=line.match(/^\s*(\d+)\s+(?=[A-Za-zÀ-ÿ])/);
+    if(lead){sets=contextSets||'';reps=lead[1]}
+  }
+  if(!sets&&contextSets)sets=contextSets;
+  if(!m&&/\b1\s+tentativo\s+max/i.test(line)){sets=sets||'1';reps='max'}
+  const seq=line.match(/@\s*((?:[+]?\d+(?:[.,]\d+)?\s*[/|]\s*)+[+]?\d+(?:[.,]\d+)?\s*(?:kg|%)?)/i);
+  const kg=line.match(/(?:@|\ba\b|\bat\b)?\s*([+]?\d+(?:[.,]\d+)?(?:\s*[-–]\s*\d+(?:[.,]\d+)?)?\s*kg)\b/i);
+  const pct=line.match(/(?:@|al(?:l['’])?|circa\s+il|circa|\bat\b)\s*(\d+(?:[.,]\d+)?(?:\s*[-–]\s*\d+(?:[.,]\d+)?)?\s*%)/i);
+  const bw=line.match(/\b(BW|body\s*weight|corpo\s*libero)\b/i);
+  if(seq)load=seq[1].replace(/\s*[/|]\s*/g,'/').replace(/\s+/g,' ');
+  else if(kg)load=kg[1].replace(/\s+/g,' ');
+  else if(pct)load=pct[1].replace(/\s+/g,'');
+  else if(bw)load='BW';
+  return normalizedRow({id:uid(),exercise,sets,reps,load,notes:''});
+}
 function parsePlannedRows(text){
   const out=[];
-  for(const raw of String(text||'').split(/\n+/)){
-    const line=raw.replace(/^[\s•\-–—*]+/,'').trim();if(!line)continue;
-    const exercise=findExercise(line);if(!exercise)continue;
-    if(/^(?:warm[- ]?up|obiettivo|note?|recupero|stop|niente)\b/i.test(line))continue;
-    let sets='',reps='',load='';
-    let m=line.match(/\b(\d+)\s*[x×]\s*(\([^)]*\)|\d+(?:\s*[-–]\s*\d+)?|max)\b/i);
-    if(m){sets=m[1];reps=m[2].replace(/[()\s]/g,'')}
-    if(!m&&/\b1\s+tentativo\s+max/i.test(line)){sets='1';reps='max'}
-    const seq=line.match(/@\s*((?:[+]?\d+(?:[.,]\d+)?\s*[/|]\s*)+[+]?\d+(?:[.,]\d+)?\s*(?:kg|%)?)/i);
-    const kg=line.match(/@\s*([+]?\d+(?:[.,]\d+)?(?:\s*[-–]\s*\d+(?:[.,]\d+)?)?\s*kg)\b/i);
-    const pct=line.match(/(?:@|al(?:l['’])?|circa\s+il|circa)\s*(\d+(?:[.,]\d+)?(?:\s*[-–]\s*\d+(?:[.,]\d+)?)?\s*%)/i);
-    const bw=line.match(/\b(BW|body\s*weight|corpo\s*libero)\b/i);
-    if(seq)load=seq[1].replace(/\s*[/|]\s*/g,'/').replace(/\s+/g,' ');else if(kg)load=kg[1].replace(/\s+/g,' ');else if(pct)load=pct[1].replace(/\s+/g,'');else if(bw)load='BW';
-    if(!sets&&!reps&&!load&&!/\b(?:test|max|salire|top|single|triple|complex)\b/i.test(line))continue;
-    out.push(normalizedRow({id:uid(),exercise,sets,reps,load,notes:''}));
+  let contextSets='',contextBudget=0;
+  const rawLines=String(text||'').split(/\n/);
+  for(const raw of rawLines){
+    const line=raw.replace(/^[\s•\-–—*]+/,'').trim();
+    if(!line){contextSets='';contextBudget=0;continue}
+    const lineMatches=exerciseMatches(line);
+    if(!lineMatches.length){
+      const cs=plannedContextSets(line);
+      if(cs){contextSets=cs;contextBudget=6}
+      continue;
+    }
+    const chunks=line.split(/\s*;\s*|\s+\+\s+|\s+(?:then|poi)\s+|\s*[→]\s*/i).filter(Boolean);
+    for(const chunk of chunks){
+      const matches=exerciseMatches(chunk);
+      if(!matches.length)continue;
+      if(matches.length===1){
+        out.push(parsePlannedPiece(chunk,matches[0].exercise,contextBudget>0?contextSets:''));
+        continue;
+      }
+      matches.forEach((match,i)=>{
+        let startAt=match.index;
+        if(i===0)startAt=0;
+        else{
+          const prevEnd=matches[i-1].end;
+          const before=chunk.slice(prevEnd,match.index);
+          const tail=before.match(/(?:^|\s)(\d+(?:\s*[x×]\s*(?:\d+|max))?)\s*$/i);
+          if(tail)startAt=match.index-tail[1].length-1;
+        }
+        const endAt=i<matches.length-1?matches[i+1].index:chunk.length;
+        const local=chunk.slice(Math.max(0,startAt),endAt).trim();
+        out.push(parsePlannedPiece(local,match.exercise,contextBudget>0?contextSets:''));
+      });
+    }
+    if(contextBudget>0){contextBudget--;if(contextBudget===0)contextSets=''}
   }
   return out;
 }
