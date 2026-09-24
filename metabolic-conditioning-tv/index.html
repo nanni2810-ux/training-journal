@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07090d">
+<title>Metabolic Conditioning Timer TV</title>
+<style>
+:root{--bg:#07090d;--p:#111722;--p2:#182131;--t:#f7f9fc;--m:#9ba8ba;--w:#49e57d;--r:#59a9ff;--y:#ffd166;--l:#ffffff1f}
+*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--t);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.app{width:100vw;height:100vh;padding:1.3vh 1.4vw;display:grid;grid-template-rows:auto 1fr auto;gap:1.2vh}
+header{display:flex;align-items:flex-end;justify-content:space-between}.ey{font-size:clamp(16px,1.35vw,27px);font-weight:900;letter-spacing:.08em;color:var(--m)}h1{font-size:clamp(28px,2.5vw,52px);line-height:1;margin:.2vh 0 0}.round{font-size:clamp(18px,1.6vw,32px);font-weight:900;color:var(--m)}
+main{display:grid;grid-template-columns:minmax(0,2.05fr) minmax(360px,.95fr);gap:1.2vw;min-height:0}
+.card{border:1px solid var(--l);background:linear-gradient(180deg,var(--p),#0c1119);border-radius:1.5vw;min-height:0;overflow:hidden;box-shadow:0 16px 50px #0005}
+.timerCard{padding:2vh 2vw;display:grid;grid-template-rows:auto 1fr auto auto auto;align-items:center}.status{display:flex;justify-content:space-between;align-items:center;width:100%}
+.phase{display:inline-flex;align-items:center;gap:.7vw;padding:.7vh 1vw;border-radius:999px;font-size:clamp(18px,1.5vw,30px);font-weight:1000;border:1px solid var(--l);background:#ffffff0f}.dot{width:clamp(12px,1vw,20px);height:clamp(12px,1vw,20px);border-radius:50%;background:var(--y)}.phase.work .dot{background:var(--w)}.phase.rest .dot{background:var(--r)}
+.info{font-size:clamp(14px,1.1vw,22px);color:var(--m);font-weight:800}
+.timer{text-align:center;font-variant-numeric:tabular-nums;font-size:clamp(150px,18vw,350px);line-height:.82;letter-spacing:-.075em;font-weight:1000;margin-left:-.04em}.timer.work{color:var(--w)}.timer.rest{color:var(--r)}.timer.ready{color:var(--y)}
+.current{text-align:center;font-size:clamp(30px,3vw,64px);font-weight:1000;line-height:1}.next{text-align:center;font-size:clamp(18px,1.6vw,32px);color:var(--m);font-weight:800;min-height:1.2em}
+.bar{width:100%;height:clamp(12px,1.2vh,20px);background:#05070a;border:1px solid var(--l);border-radius:999px;overflow:hidden}.prog{height:100%;width:0;background:var(--y)}.prog.work{background:var(--w)}.prog.rest{background:var(--r)}
+.seq{padding:1.5vh 1.1vw;display:grid;grid-template-rows:auto 1fr;gap:1vh}.seqTitle{font-size:clamp(18px,1.5vw,30px);font-weight:1000;color:var(--m)}.steps{display:grid;grid-template-rows:repeat(10,1fr);gap:.45vh;min-height:0}
+.step{display:grid;grid-template-columns:2.3vw 1fr auto;align-items:center;gap:.7vw;border:1px solid transparent;background:#ffffff09;border-radius:.75vw;padding:.3vh .75vw}.step.active{border-color:#ffffff52;background:#ffffff17;transform:scale(1.015)}
+.num{display:grid;place-items:center;width:clamp(24px,2vw,40px);height:clamp(24px,2vw,40px);border-radius:50%;background:#0a0f16;color:var(--m);font-size:clamp(12px,1vw,20px);font-weight:1000}.lab{font-size:clamp(17px,1.35vw,28px);font-weight:1000}.dur{font-size:clamp(16px,1.25vw,26px);color:var(--m);font-weight:1000}.workLab{color:var(--w)}.restLab{color:var(--r)}
+footer{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1vw}.controls{display:flex;gap:.7vw}button,select{font:inherit;font-weight:1000;border-radius:.8vw;min-height:clamp(42px,4.4vh,68px)}button{padding:0 1.25vw;border:1px solid var(--l);cursor:pointer}#start{background:#fff;color:#080a0e}#pause{background:var(--p2);color:#fff}#reset{background:transparent;color:var(--m)}button:disabled{opacity:.45}.note{text-align:center;color:var(--m);font-size:clamp(13px,1vw,20px);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.settings{display:flex;align-items:center;gap:.7vw;color:var(--m);font-weight:900}select{background:var(--p2);color:#fff;border:1px solid var(--l);padding:0 .8vw}
+@media(max-aspect-ratio:4/3){main{grid-template-columns:1.7fr 1fr}.timer{font-size:clamp(110px,16vw,240px)}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div><div class="ey">🏃🏼‍♀️‍➡️ METABOLIC CONDITIONING 🏃🏻‍♂️‍➡️</div><h1>Run Intervals</h1></div><div id="round" class="round">Giro 1 / 2</div></header>
+<main>
+<section class="card timerCard">
+<div class="status"><div id="pill" class="phase ready"><span class="dot"></span><span id="phase">PRONTO</span></div><div class="info">FAST / REST • timer sonoro</div></div>
+<div id="timer" class="timer ready">00:10</div>
+<div id="current" class="current">Preparati</div>
+<div id="next" class="next">Poi: 1:00 FAST</div>
+<div class="bar"><div id="prog" class="prog ready"></div></div>
+</section>
+<aside class="card seq"><div class="seqTitle">SEQUENZA DEL GIRO</div><div id="steps" class="steps"></div></aside>
+</main>
+<footer>
+<div class="controls"><button id="start">▶ AVVIA</button><button id="pause" disabled>⏸ PAUSA</button><button id="reset">↺ RESET</button></div>
+<div class="note">🔊 FAST = doppio beep alto · REST = beep basso · ultimi 3” = countdown · fine giro = triplo segnale</div>
+<div class="settings"><label for="rounds">Giri</label><select id="rounds"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option value="0">∞</option></select></div>
+</footer>
+</div>
+<script>
+(function(){
+var PREP=10,seq=[["work","FAST",60],["rest","REST",60],["work","FAST",45],["rest","REST",45],["work","FAST",30],["rest","REST",30],["work","FAST",45],["rest","REST",45],["work","FAST",60],["rest","REST",120]];
+var $=function(s){return document.querySelector(s)},timer=$("#timer"),cur=$("#current"),next=$("#next"),phase=$("#phase"),pill=$("#pill"),round=$("#round"),prog=$("#prog"),start=$("#start"),pause=$("#pause"),reset=$("#reset"),rounds=$("#rounds"),steps=$("#steps");
+var audio=null,state="idle",prep=true,idx=-1,rnd=1,rem=PREP,dur=PREP,end=0,raf=null,last=null;
+function fmt(x){x=Math.max(0,Math.ceil(x));var m=Math.floor(x/60),s=x%60;return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")}
+function hum(x){return x===120?"2:00":x===60?"1:00":x===45?"0:45":x===30?"0:30":fmt(x)}
+function roundText(){var n=Number(rounds.value);return n===0?"Giro "+rnd+" / ∞":"Giro "+rnd+" / "+n}
+steps.innerHTML=seq.map(function(s,i){return '<div class="step" data-i="'+i+'"><div class="num">'+(i+1)+'</div><div class="lab '+(s[0]==="work"?"workLab":"restLab")+'">'+s[1]+'</div><div class="dur">'+hum(s[2])+'</div></div>'}).join("");
+function active(i){document.querySelectorAll(".step").forEach(function(e){e.classList.toggle("active",Number(e.dataset.i)===i)})}
+async function soundOn(){if(!audio)audio=new(window.AudioContext||window.webkitAudioContext)();if(audio.state==="suspended")await audio.resume()}
+function tone(f,d,delay,g,type){if(!audio)return;d=d||.12;delay=delay||0;g=g||.22;type=type||"sine";var t=audio.currentTime+delay,o=audio.createOscillator(),a=audio.createGain();o.type=type;o.frequency.setValueAtTime(f,t);a.gain.setValueAtTime(.0001,t);a.gain.exponentialRampToValueAtTime(g,t+.012);a.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(a).connect(audio.destination);o.start(t);o.stop(t+d+.03)}
+function sWork(){tone(980,.13,0,.28,"square");tone(1320,.16,.18,.25,"square")}function sRest(){tone(330,.32,0,.30)}function sCount(){tone(700,.10,0,.18,"square")}function sRound(){tone(700,.12,0,.22,"square");tone(900,.12,.16,.22,"square");tone(1150,.18,.32,.25,"square")}function sFinish(){[523,659,784,1047].forEach(function(f,i){tone(f,.22,i*.16,.25)})}
+function theme(t){timer.className="timer "+t;pill.className="phase "+t;prog.className="prog "+t}
+function nextInfo(){if(idx<seq.length-1)return "Poi: "+hum(seq[idx+1][2])+" "+seq[idx+1][1];var n=Number(rounds.value);return n===0||rnd<n?"Poi: nuovo giro → 1:00 FAST":"Poi: fine workout"}
+function ui(){timer.textContent=fmt(rem);round.textContent=roundText();if(prep){theme("ready");phase.textContent="PRONTO";cur.textContent="Preparati";next.textContent="Poi: 1:00 FAST";active(-1)}else if(state==="done"){theme("done");phase.textContent="FINE";cur.textContent="Workout completato";next.textContent="Ottimo lavoro!";active(-1)}else{var s=seq[idx];theme(s[0]);phase.textContent=s[1];cur.textContent=hum(s[2])+" "+s[1];next.textContent=nextInfo();active(idx)}prog.style.width=Math.min(100,Math.max(0,((dur-rem)/dur)*100))+"%"}
+function phaseStart(i){prep=false;idx=i;var s=seq[i];rem=s[2];dur=s[2];end=performance.now()+rem*1000;last=null;s[0]==="work"?sWork():sRest();ui()}
+function advance(){if(prep){phaseStart(0);return}if(idx<seq.length-1){phaseStart(idx+1);return}var n=Number(rounds.value);if(n===0||rnd<n){sRound();rnd++;setTimeout(function(){if(state==="running")phaseStart(0)},520)}else finish()}
+function finish(){state="done";rem=0;dur=1;sFinish();start.textContent="▶ RIPARTI";start.disabled=false;pause.disabled=true;rounds.disabled=false;ui();cancelAnimationFrame(raf)}
+function tick(now){if(state!=="running")return;rem=Math.max(0,(end-now)/1000);var shown=Math.ceil(rem);if(shown!==last){last=shown;if(shown<=3&&shown>0)sCount()}ui();if(rem<=.01){rem=0;ui();advance()}if(state==="running")raf=requestAnimationFrame(tick)}
+async function go(){await soundOn();if(state==="done")doReset(false);if(state==="idle"){state="running";rounds.disabled=true;start.disabled=true;pause.disabled=false;prep=true;rnd=1;idx=-1;rem=PREP;dur=PREP;end=performance.now()+PREP*1000;last=null;tone(520,.16,0,.2);ui();raf=requestAnimationFrame(tick);return}if(state==="paused"){state="running";start.disabled=true;pause.disabled=false;rounds.disabled=true;end=performance.now()+rem*1000;raf=requestAnimationFrame(tick)}}
+function doPause(){if(state!=="running")return;state="paused";cancelAnimationFrame(raf);start.textContent="▶ RIPRENDI";start.disabled=false;pause.disabled=true;phase.textContent+=" · PAUSA"}
+function doReset(beep){cancelAnimationFrame(raf);state="idle";prep=true;idx=-1;rnd=1;rem=PREP;dur=PREP;last=null;start.textContent="▶ AVVIA";start.disabled=false;pause.disabled=true;rounds.disabled=false;if(beep&&audio)tone(440,.08,0,.12);ui()}
+start.onclick=go;pause.onclick=doPause;reset.onclick=function(){doReset(true)};rounds.onchange=ui;ui();
+})();
+</script>
+</body>
+</html>
